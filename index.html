@@ -1776,7 +1776,7 @@
         },
       ];
 
- let questionNumber = 1; // 問題番号の初期化
+            let questionNumber = 1; // 問題番号の初期化
         let currentSection = 0; // 現在のセクション
         let usedQuestions = []; // 使用済み問題のインデックスを保持
         let correctQuestions = []; // 正解した問題を記録
@@ -1819,6 +1819,9 @@
 
             document.getElementById('questionNumber').textContent = `セクション ${currentSection + 1} 問題 ${questionNumber}`;
             document.getElementById('question').textContent = question.漢字;
+            document.getElementById('answerButton').onclick = function() {
+                alert(`声調: ${question.声調}`);
+            };
             document.getElementById('correctButton').onclick = function() {
                 correctQuestions.push(question);
                 usedQuestions.push(questionIndex);
@@ -1867,9 +1870,11 @@
     <div id="sectionButtons" style="margin-bottom: 20px;"></div>
     <div id="questionNumber" style="font-size: 20px; font-weight: bold;">セクション 1 問題 1</div>
     <div id="question" style="font-size: 24px; font-weight: bold;"></div>
+    <button id="answerButton">答えを見る</button>
     <button id="correctButton">正解</button>
     <button id="incorrectButton">間違えた</button>
     <div id="results" style="margin-top: 20px;"></div>
 </body>
 </html>
+
 
