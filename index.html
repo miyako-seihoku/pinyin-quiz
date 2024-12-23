@@ -1846,6 +1846,16 @@
             resultContainer.innerHTML += `<ul>${incorrectQuestions.map(q => `<li>${q.漢字} (声調: ${q.声調})</li>`).join('')}</ul>`;
         }
 
+          function handleKeyPress(event) {
+            if (event.key === 'V' || event.key === 'v') {
+                document.getElementById('correctButton').click();
+            } else if (event.key === 'N' || event.key === 'n') {
+                document.getElementById('incorrectButton').click();
+            } else if (event.key === 'B' || event.key === 'b') {
+                document.getElementById('answerButton').click();
+            }
+        }
+
         // セクション選択用ボタンを生成
         function createSectionButtons() {
             const buttonContainer = document.getElementById('sectionButtons');
@@ -1861,6 +1871,7 @@
         window.onload = function() {
             createSectionButtons();
             selectSection(0); // デフォルトでセクション1を選択
+            document.addEventListener('keydown', handleKeyPress); // キーイベントを登録
         };
     </script>
 </head>
