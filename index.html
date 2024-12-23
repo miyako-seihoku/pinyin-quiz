@@ -1776,97 +1776,100 @@
         },
       ];
 
-      let questionNumber = 1; // 問題番号の初期化
-      let currentSection = 0; // 現在のセクション
-      let usedQuestions = []; // 使用済み問題のインデックスを保持
+ let questionNumber = 1; // 問題番号の初期化
+        let currentSection = 0; // 現在のセクション
+        let usedQuestions = []; // 使用済み問題のインデックスを保持
+        let correctQuestions = []; // 正解した問題を記録
+        let incorrectQuestions = []; // 間違えた問題を記録
 
-      // セクションを作成
-      const sectionSize = 50;
-      const sections = [];
-      for (let i = 0; i < toneData.length; i += sectionSize) {
-        sections.push(toneData.slice(i, i + sectionSize));
-      }
-
-      // ユーザーがセクションを選択する
-      function selectSection(sectionIndex) {
-        if (sectionIndex < 0 || sectionIndex >= sections.length) {
-          alert("無効なセクションです。");
-          return;
-        }
-        currentSection = sectionIndex;
-        questionNumber = 1;
-        usedQuestions = [];
-        generateQuestion();
-      }
-
-      // ランダムに問題を生成する関数
-      function generateQuestion() {
-        const section = sections[currentSection];
-        const availableQuestions = section.filter(
-          (_, index) => !usedQuestions.includes(index)
-        );
-
-        if (availableQuestions.length === 0) {
-          alert(
-            "このセクションの問題は全て出題されました。別のセクションを選んでください。"
-          );
-          return;
+        // セクションを作成
+        const sectionSize = 50;
+        const sections = [];
+        for (let i = 0; i < toneData.length; i += sectionSize) {
+            sections.push(toneData.slice(i, i + sectionSize));
         }
 
-        const randomIndex = Math.floor(
-          Math.random() * availableQuestions.length
-        );
-        const question = availableQuestions[randomIndex];
-        const questionIndex = section.indexOf(question);
+        // ユーザーがセクションを選択する
+        function selectSection(sectionIndex) {
+            if (sectionIndex < 0 || sectionIndex >= sections.length) {
+                alert("無効なセクションです。");
+                return;
+            }
+            currentSection = sectionIndex;
+            questionNumber = 1;
+            usedQuestions = [];
+            correctQuestions = [];
+            incorrectQuestions = [];
+            generateQuestion();
+        }
 
-        document.getElementById("questionNumber").textContent = `セクション ${
-          currentSection + 1
-        } 問題 ${questionNumber}`;
-        document.getElementById("question").textContent = question.漢字;
-        document.getElementById("answerButton").onclick = function () {
-          alert(`声調: ${question.声調} 拼音:${question.ピンイン}`);
+        // ランダムに問題を生成する関数
+        function generateQuestion() {
+            const section = sections[currentSection];
+            const availableQuestions = section.filter((_, index) => !usedQuestions.includes(index));
+
+            if (availableQuestions.length === 0) {
+                showResults();
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const question = availableQuestions[randomIndex];
+            const questionIndex = section.indexOf(question);
+
+            document.getElementById('questionNumber').textContent = `セクション ${currentSection + 1} 問題 ${questionNumber}`;
+            document.getElementById('question').textContent = question.漢字;
+            document.getElementById('correctButton').onclick = function() {
+                correctQuestions.push(question);
+                usedQuestions.push(questionIndex);
+                questionNumber++;
+                generateQuestion();
+            };
+            document.getElementById('incorrectButton').onclick = function() {
+                incorrectQuestions.push(question);
+                usedQuestions.push(questionIndex);
+                questionNumber++;
+                generateQuestion();
+            };
+        }
+
+        // セクション結果を表示する
+        function showResults() {
+            const resultContainer = document.getElementById('results');
+            resultContainer.innerHTML = `<h2>セクション ${currentSection + 1} の結果</h2>`;
+            resultContainer.innerHTML += `<h3>正解した問題</h3>`;
+            resultContainer.innerHTML += `<ul>${correctQuestions.map(q => `<li>${q.漢字} (声調: ${q.声調})</li>`).join('')}</ul>`;
+            resultContainer.innerHTML += `<h3>間違えた問題</h3>`;
+            resultContainer.innerHTML += `<ul>${incorrectQuestions.map(q => `<li>${q.漢字} (声調: ${q.声調})</li>`).join('')}</ul>`;
+        }
+
+        // セクション選択用ボタンを生成
+        function createSectionButtons() {
+            const buttonContainer = document.getElementById('sectionButtons');
+            for (let i = 0; i < sections.length; i++) {
+                const button = document.createElement('button');
+                button.textContent = `セクション ${i + 1}`;
+                button.onclick = () => selectSection(i);
+                buttonContainer.appendChild(button);
+            }
+        }
+
+        // ページ読み込み時に初期化
+        window.onload = function() {
+            createSectionButtons();
+            selectSection(0); // デフォルトでセクション1を選択
         };
-
-        usedQuestions.push(questionIndex); // 使用済みに追加
-        questionNumber++;
-      }
-
-      // セクション選択用ボタンを生成
-      function createSectionButtons() {
-        const buttonContainer = document.getElementById("sectionButtons");
-        for (let i = 0; i < sections.length; i++) {
-          const button = document.createElement("button");
-          button.textContent = `セクション ${i + 1}`;
-          button.onclick = () => selectSection(i);
-          buttonContainer.appendChild(button);
-        }
-      }
-      // キーイベントを処理
-      function handleKeyPress(event) {
-        if (event.key === "Enter") {
-          document.getElementById("questionButton").click();
-        } else if (event.key === "Shift") {
-          document.getElementById("answerButton").click();
-        }
-      }
-
-      // ページ読み込み時に初期化
-      window.onload = function () {
-        createSectionButtons();
-        selectSection(0); // デフォルトでセクション1を選択
-        document.addEventListener("keydown", handleKeyPress); // キーイベントを登録
-      };
     </script>
-  </head>
-  <body>
+</head>
+<body>
     <h1>漢字と声調クイズ</h1>
     <p>以下の漢字の声調を答えてみてください。</p>
-    <div id="sectionButtons" style="margin-bottom: 20px"></div>
-    <div id="questionNumber" style="font-size: 20px; font-weight: bold">
-      セクション 1 問題 1
-    </div>
-    <div id="question" style="font-size: 60px; font-weight: bold"></div>
-    <button id="answerButton">答えを見る</button>
-    <button id="questionButton" onclick="generateQuestion()">次の問題</button>
-  </body>
+    <div id="sectionButtons" style="margin-bottom: 20px;"></div>
+    <div id="questionNumber" style="font-size: 20px; font-weight: bold;">セクション 1 問題 1</div>
+    <div id="question" style="font-size: 24px; font-weight: bold;"></div>
+    <button id="correctButton">正解</button>
+    <button id="incorrectButton">間違えた</button>
+    <div id="results" style="margin-top: 20px;"></div>
+</body>
 </html>
+
