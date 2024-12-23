@@ -1820,7 +1820,7 @@
             document.getElementById('questionNumber').textContent = `セクション ${currentSection + 1} 問題 ${questionNumber}`;
             document.getElementById('question').textContent = question.漢字;
             document.getElementById('answerButton').onclick = function() {
-                alert(`声調: ${question.声調}`);
+                alert(`声調: ${question.声調} ピンイン: ${question.ピンイン}`);
             };
             document.getElementById('correctButton').onclick = function() {
                 correctQuestions.push(question);
